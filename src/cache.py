@@ -1,7 +1,4 @@
 class Cache:
-    def __init__(self, max_size: int):
-        self.max_size = max_size
-
     def get(self, key):
         pass
 
