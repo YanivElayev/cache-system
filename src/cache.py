@@ -1,9 +1,9 @@
 class Cache:
-    def get(self, key):
+    def get(self, offset, size):
         pass
 
-    def put(self, key, value):
+    def put(self, offset, value):
         pass
 
-    def delete(self, key):
+    def delete(self, offset, size):
         pass
