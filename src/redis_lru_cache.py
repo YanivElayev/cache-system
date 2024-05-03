@@ -48,6 +48,10 @@ class RedisLRUChunksCache(Cache):
             else:
                 print("received from function's execution")
                 result = func(offset, size)
-                self.put(offset, result)
+                if len(result) == SMALL_REQUEST_SIZE:
+                    self.put(offset, result)
+                    large_chunk_from_requested_offset = func(offset, LARGE_REQUEST_SIZE)
+                    self.put(offset, large_chunk_from_requested_offset)
                 return result
+
         return func_wrapper
