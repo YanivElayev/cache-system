@@ -42,7 +42,7 @@ class RedisChunksCache(Cache):
                 offset_to_remove = self.redis_client.zrange(self.access_times_sorted_sets[size_of_current_chunk], 0, 0)[
                     0]
             print(
-                f"deleting older chunk - size: {size_to_remove}, offset: {offset_to_remove}, seconds since recent large chunk: {seconds_since_oldest_large_chunk}")
+                f"deleting older chunk - size: {size_to_remove}, offset: {offset_to_remove}, seconds since oldest large chunk: {seconds_since_oldest_large_chunk}")
             self.delete(offset_to_remove, size_to_remove)
         self.redis_client.zadd(self.access_times_sorted_sets[size_of_current_chunk], {str(offset): time.time()})
         return self.redis_client.hset(str(size_of_current_chunk), str(offset), value)
@@ -51,19 +51,20 @@ class RedisChunksCache(Cache):
         self.redis_client.zrem(self.access_times_sorted_sets[size], offset)
         return self.redis_client.hdel(str(size), str(offset))
 
-    def __call__(self, func: Callable):
+    def __call__(self, func: Callable) -> Callable:
         @functools.wraps(func)
-        def func_wrapper(offset: int, size: int):
+        def func_wrapper(*args):
+            offset, size = args[1], args[2]
             value = self.get(offset, size)
             if value:
                 print("received from cache essekititttttt")
                 return value
             else:
                 print("received from function's execution")
-                result = func(offset, size)
+                result = func(*args)
                 if not len(result) == LARGE_REQUEST_SIZE:
                     self.put(offset, result)
-                    large_chunk_from_requested_offset = func(offset, LARGE_REQUEST_SIZE)
+                    large_chunk_from_requested_offset = func(args[0], offset, LARGE_REQUEST_SIZE)
                     self.put(offset, large_chunk_from_requested_offset)
                 return result
 
