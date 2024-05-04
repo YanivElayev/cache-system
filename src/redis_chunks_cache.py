@@ -9,7 +9,7 @@ from redis import Redis
 from src.constants import SECONDS_OF_LARGE_CHUNKS_IN_CACHE, LARGE_REQUEST_SIZE
 
 
-class RedisLRUChunksCache(Cache):  # TODO rename since it is not a usual lru cache
+class RedisChunksCache(Cache):
     def __init__(self, redis_host: str, redis_port: int, chunk_sizes: List[int], max_size: int,
                  duration_of_largest_chunk_size=SECONDS_OF_LARGE_CHUNKS_IN_CACHE):
         self.redis_client = Redis(redis_host, redis_port, decode_responses=True)
