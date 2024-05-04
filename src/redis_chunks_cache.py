@@ -30,19 +30,19 @@ class RedisChunksCache(Cache):
             current_size += chunk_size * self.redis_client.hlen(str(chunk_size))
         size_of_current_chunk = len(value)
         if current_size + size_of_current_chunk > self.max_size:
-            recent_large_chunk = \
-                self.redis_client.zrevrange(self.access_times_sorted_sets[self.largest_chunk_size], 0, 0,
-                                            withscores=True)[0]
-            seconds_since_recent_large_chunk = time.time() - recent_large_chunk[1]
-            if size_of_current_chunk != self.largest_chunk_size and seconds_since_recent_large_chunk > self.duration_of_largest_chunks:
+            oldest_large_chunk = \
+                self.redis_client.zrange(self.access_times_sorted_sets[self.largest_chunk_size], 0, 0, withscores=True)[
+                    0]
+            seconds_since_oldest_large_chunk = time.time() - oldest_large_chunk[1]
+            if size_of_current_chunk != self.largest_chunk_size and seconds_since_oldest_large_chunk > self.duration_of_largest_chunks:
                 size_to_remove = self.largest_chunk_size
-                offset_to_remove = recent_large_chunk[0]
+                offset_to_remove = oldest_large_chunk[0]
             else:
                 size_to_remove = size_of_current_chunk
                 offset_to_remove = self.redis_client.zrange(self.access_times_sorted_sets[size_of_current_chunk], 0, 0)[
                     0]
             print(
-                f"deleting older chunk - size: {size_to_remove}, seconds since recent large chunk: {seconds_since_recent_large_chunk}")
+                f"deleting older chunk - size: {size_to_remove}, offset: {offset_to_remove}, seconds since recent large chunk: {seconds_since_oldest_large_chunk}")
             self.delete(offset_to_remove, size_to_remove)
         self.redis_client.zadd(self.access_times_sorted_sets[size_of_current_chunk], {str(offset): time.time()})
         return self.redis_client.hset(str(size_of_current_chunk), str(offset), value)
