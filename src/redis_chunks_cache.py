@@ -34,7 +34,7 @@ class RedisChunksCache(Cache):
                 self.redis_client.zrange(self.access_times_sorted_sets[self.largest_chunk_size], 0, 0, withscores=True)[
                     0]
             seconds_since_oldest_large_chunk = time.time() - oldest_large_chunk[1]
-            if size_of_current_chunk != self.largest_chunk_size and seconds_since_oldest_large_chunk > self.duration_of_largest_chunks:
+            if seconds_since_oldest_large_chunk > self.duration_of_largest_chunks:
                 size_to_remove = self.largest_chunk_size
                 offset_to_remove = oldest_large_chunk[0]
             else:
