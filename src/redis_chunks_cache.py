@@ -26,7 +26,7 @@ class RedisChunksCache(Cache):
     def put(self, offset: int, value: str) -> int:
         current_size = 0
         for chunk_size in self.chunk_sizes:  # The amount of sizes is predetermined, so we're iterating over a list
-            # in a predetermined length. So the complexity here is O(const number) which in our case is O(2) which  is
+            # in a predetermined length. So the complexity here is O(const number) which in our case is O(2) which is
             # still O(1). I chose to put the sizes in a list just for the convenience.
             current_size += chunk_size * self.redis_client.hlen(str(chunk_size))
         size_of_current_chunk = len(value)
