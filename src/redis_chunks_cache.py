@@ -19,17 +19,19 @@ class RedisChunksCache(Cache):
         self.largest_chunk_size = max(chunk_sizes)
         self.duration_of_largest_chunks = duration_of_largest_chunk_size
 
-    def get(self, offset: int, size: int):
+    def get(self, offset: int, size: int) -> str:
         if not size == self.largest_chunk_size:
             self.redis_client.zadd(self.access_times_sorted_sets[size], {str(offset): time.time()})
         return self.redis_client.hget(str(size), str(offset))
 
-    def put(self, offset: int, value: str):
+    def put(self, offset: int, value: str) -> int:
         current_size = 0
-        for chunk_size in self.chunk_sizes:
+        for chunk_size in self.chunk_sizes:  # The amount of sizes is predetermined, so we're iterating over a list
+            # in a predetermined length. So the complexity here is O(const number) which in our case is O(2) which  is
+            # still O(1). I chose to put the sizes in a list just for the convenience.
             current_size += chunk_size * self.redis_client.hlen(str(chunk_size))
         size_of_current_chunk = len(value)
-        if current_size + size_of_current_chunk > self.max_size:
+        if current_size + size_of_current_chunk > self.max_size:  # The cache is full.
             oldest_large_chunk = \
                 self.redis_client.zrange(self.access_times_sorted_sets[self.largest_chunk_size], 0, 0, withscores=True)[
                     0]
@@ -47,7 +49,7 @@ class RedisChunksCache(Cache):
         self.redis_client.zadd(self.access_times_sorted_sets[size_of_current_chunk], {str(offset): time.time()})
         return self.redis_client.hset(str(size_of_current_chunk), str(offset), value)
 
-    def delete(self, offset: int, size: int):
+    def delete(self, offset: int, size: int) -> int:
         self.redis_client.zrem(self.access_times_sorted_sets[size], offset)
         return self.redis_client.hdel(str(size), str(offset))
 
