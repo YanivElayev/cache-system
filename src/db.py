@@ -5,7 +5,7 @@ cache = RedisChunksCache('localhost', 6379, [SMALL_REQUEST_SIZE, LARGE_REQUEST_S
                          SECONDS_OF_LARGE_CHUNKS_IN_CACHE)
 
 
-class FileManager:
+class DB:
     def __init__(self, path: str):
         self.path = path
 
