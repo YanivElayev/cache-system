@@ -1,4 +1,6 @@
 import functools
+import logging
+import sys
 import time
 from typing import Callable, List
 
@@ -6,6 +8,8 @@ from src.cache import Cache
 from redis import Redis
 
 from src.constants import SECONDS_OF_LARGE_CHUNKS_IN_CACHE, LARGE_REQUEST_SIZE
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 
 class RedisChunksCache(Cache):
@@ -42,7 +46,7 @@ class RedisChunksCache(Cache):
                 size_to_remove = size_of_current_chunk
                 offset_to_remove = self.redis_client.zrange(self.access_times_sorted_sets[size_of_current_chunk], 0, 0)[
                     0]
-            print(
+            logging.info(
                 f"deleting older chunk - size: {size_to_remove}, offset: {offset_to_remove}, seconds since oldest large chunk: {seconds_since_oldest_large_chunk}")
             self.delete(offset_to_remove, size_to_remove)
         self.redis_client.zadd(self.access_times_sorted_sets[size_of_current_chunk], {str(offset): time.time()})
@@ -58,10 +62,10 @@ class RedisChunksCache(Cache):
             offset, size = args[1], args[2]
             value = self.get(offset, size)
             if value:
-                print("received from cache essekititttttt")
+                logging.info("get chunk from cache")
                 return value
             else:
-                print("received from function's execution")
+                logging.info("get chunk from method")
                 result = func(*args)
                 if not len(result) == LARGE_REQUEST_SIZE:
                     self.put(offset, result)
