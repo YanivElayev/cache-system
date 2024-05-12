@@ -1,11 +1,16 @@
-from src.constants import SMALL_REQUEST_SIZE, LARGE_REQUEST_SIZE, CACHE_MAX_SIZE, SECONDS_OF_LARGE_CHUNKS_IN_CACHE
+from src.constants import SMALL_REQUEST_SIZE, LARGE_REQUEST_SIZE, CACHE_MAX_SIZE, SECONDS_OF_LARGE_CHUNKS_IN_CACHE, \
+    REDIS_HOST, REDIS_PORT
 from src.redis_chunks_cache import RedisChunksCache
 
-cache = RedisChunksCache('localhost', 6379, [SMALL_REQUEST_SIZE, LARGE_REQUEST_SIZE], CACHE_MAX_SIZE,
+cache = RedisChunksCache(REDIS_HOST, REDIS_PORT, [SMALL_REQUEST_SIZE, LARGE_REQUEST_SIZE], CACHE_MAX_SIZE,
                          SECONDS_OF_LARGE_CHUNKS_IN_CACHE)
 
 
 class DB:
+    """
+    A class that simulates the db. The class uses the cache for each chunk it gets from the file.
+    """
+
     def __init__(self, path: str):
         self.path = path
 
