@@ -35,11 +35,17 @@ for 64 KB chunks is FIFO.
 The chunks are saved in Hashes. Each hash object represents chunk size. Each field represents offset.
 The value of each field is the chunk.
 
-"image of hash"
+![8192 hset](https://github.com/YanivElayev/cache-system/assets/40890285/172fd3b8-84b6-439f-a046-7c5509be90c9)
 
 In addition to the hashes, There is a sorted set to each chunk size. The sorted set of 8 KB chunks sorts offsets
 by their access times. Each time there is a read request from an offset to an 8 KB chunk, its access 
 time is updated and the chunk will be in the head of the set. 
 The sorted set of 64 KB chunks sorts offsets by their insertion time since the 64 KB chunks have predetermined 
 expiration time which is 2 seconds after their insertion time.
+
+![redis sorted set 8192](https://github.com/YanivElayev/cache-system/assets/40890285/c00f4a69-e9ee-4e82-a880-4900e3c714af)
+
+![redis sorted set 65536](https://github.com/YanivElayev/cache-system/assets/40890285/b62e0c99-7039-41e5-b0e9-686b302236ab)
+
+
 
