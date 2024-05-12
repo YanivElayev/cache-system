@@ -43,6 +43,9 @@ time is updated and the chunk will be on the top of the set.
 The sorted set of 64 KB chunks sorts offsets by their insertion time since the 64 KB chunks have predetermined 
 expiration time which is 2 seconds after their insertion time.
 
+Here are the sorted sets of offsets 100, 90 and 80. For 8 KB chunks, the value of each offset is the timestamp of its last access time.
+For 64 KB chunks, the value of each offset is the timestamp of its insertion time.
+
 ![redis sorted set 8192](https://github.com/YanivElayev/cache-system/assets/40890285/c00f4a69-e9ee-4e82-a880-4900e3c714af)
 
 ![redis sorted set 65536](https://github.com/YanivElayev/cache-system/assets/40890285/b62e0c99-7039-41e5-b0e9-686b302236ab)
