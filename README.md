@@ -23,11 +23,11 @@ read-request does not follow the repeated read-request patterns.
 The 8 KB chunks are saved in an LRU (least recently used) cache strategy, which means when the cache is
 full, the chunk that was least recently accessed will be removed in order to make room for the new chunk.
 But, the first thing the cache will do when the cache is full is to remove the oldest 64 KB chunk if
-the chunk is expired - which is 2 seconds after its insertion time. If there has not been 2 seconds since the
-insertion time of the oldest 64 KB chunk, it means the oldest 64 KB chunk is still might be accessed, so we
+it is expired - which means there has been 2 seconds from its insertion time. If there has not been 2 seconds since the
+insertion time of the oldest 64 KB chunk, it means the oldest 64 KB chunk still might be accessed, so we
 have to remove the least recently used 8 KB chunk.
-When we save a 64 KB chunk, the oldest 64 KB chunk will be removed from the cache, 
-no matter how many seconds pass from its insertion time, which means the cache strategy that we implemented 
+When we save a 64 KB chunk, the oldest 64 KB chunk will be removed from the cache if the cache is full, 
+no matter how many seconds have passed from its insertion time, which means the cache strategy that we've implemented 
 for 64 KB chunks is FIFO.
 
 ### Redis Sets Structure
