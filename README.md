@@ -38,7 +38,7 @@ The value of each field is the chunk.
 ![8192 hset](https://github.com/YanivElayev/cache-system/assets/40890285/172fd3b8-84b6-439f-a046-7c5509be90c9)
 
 In addition to the hashes, there are 2 sorted sets. Each sorted set represents chunk size. The sorted set of 8 KB chunks sorts offsets
-by their access times. Each field is an offset and the value in which the offsets are sorted by is the timestamp of their last access time. Each read request in a size of 8 KB updates the access 
+by their access times. Each field is an offset and the value in which the offsets are sorted by is the timestamp of their last access time. Each read request for 8 KB chunk updates the access 
 time of the requested offset, and the offset will be on the top of the set. 
 The sorted set of 64 KB chunks sorts offsets by their insertion time since the 64 KB chunks have predetermined 
 expiration time which is 2 seconds after their insertion time.
