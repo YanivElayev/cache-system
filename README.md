@@ -37,11 +37,14 @@ The value of each field is the chunk.
 
 ![8192 hset](https://github.com/YanivElayev/cache-system/assets/40890285/172fd3b8-84b6-439f-a046-7c5509be90c9)
 
-In addition to the hashes, there are 2 sorted sets. Each sorted sets represents chunk size. The sorted set of 8 KB chunks sorts offsets
-by their access times. Each time there is a read request from an offset to an 8 KB chunk, its access 
-time is updated and the chunk will be in the head of the set. 
+In addition to the hashes, there are 2 sorted sets. Each sorted set represents chunk size. The sorted set of 8 KB chunks sorts offsets
+by their access times. Each field is an offset. The value in which the offsets are sorted by is the timestamp of their last access time. Each read request in a size of 8 KB updates the access 
+time is of the requested offset, and the offset will be on the top of the set. 
 The sorted set of 64 KB chunks sorts offsets by their insertion time since the 64 KB chunks have predetermined 
 expiration time which is 2 seconds after their insertion time.
+
+Here are the sorted sets that stores offsets 100, 90 and 80. For 8 KB chunks, the value of each offset is the timestamp of its last access time.
+For 64 KB chunks, the value of each offset is the timestamp of its insertion time.
 
 ![redis sorted set 8192](https://github.com/YanivElayev/cache-system/assets/40890285/c00f4a69-e9ee-4e82-a880-4900e3c714af)
 
